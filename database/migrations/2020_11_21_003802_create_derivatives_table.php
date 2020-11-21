@@ -15,6 +15,7 @@ class CreateDerivativesTable extends Migration
     {
         Schema::create('derivatives', function (Blueprint $table) {
             $table->id();
+            $table->integer('model_id');
             $table->foreign('model_id')->references('id')->on('models');
             $table->string('name');
             $table->timestamps();
