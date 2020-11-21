@@ -28,7 +28,6 @@ class CreateVehiclesTable extends Migration
             $table->integer('mileage')->nullable();
             $table->datetime('date_on_forecourt')->nullable();
             $table->string('images');
-            // $table->boolean('active');
             $table->timestamps();
         });
     }
