@@ -17,7 +17,9 @@ class CreateVehiclesTable extends Migration
             $table->id();
             $table->integer('derivative_id');
             $table->foreign('derivative_id')->references('id')->on('derivatives');
+            $table->integer('colour_id');
             $table->foreign('colour_id')->references('id')->on('colours');
+            $table->integer('vehicle_type_id');
             $table->foreign('vehicle_type_id')->references('id')->on('vehicle_types');
             $table->string('registration')->length(7);
             // $table->decimal('price_ex_vat', 19, 4);
