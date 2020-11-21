@@ -11,7 +11,18 @@ class Vehicles extends Model
 
     protected $dates = [
     	'date_on_forecourt'
-    ]
+    ];
+
+    protected $fillable = [
+        'colour_id',
+        'derivative_id',
+        'vehicle_type_id',
+        'registration',
+        'price_inc_vat',
+        'mileage',
+        'date_on_forecourt',
+        'images'
+    ];
 
     public function colour()
     {

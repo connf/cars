@@ -7,6 +7,7 @@ use App\Models\Ranges;
 use App\Models\Models;
 use App\Models\Derivatives;
 use App\Models\Colours;
+use App\Models\Vehicles;
 use App\Models\VehicleTypes;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -66,14 +67,14 @@ class ImportVehicles extends Command
         $this->line('Starting import from row: '.$start);
 
         if (($handle = fopen($this->argument('file'), "r")) !== false) {
-            while (($data = fgetcsv($handle)) !== false && $row < 5) {
+            while (($data = fgetcsv($handle)) !== false) {
                 if ($row >= $start) {
                     $this->info("Importing row $row:");
 
                     $make = Makes::firstOrCreate(['name' => $data[1]])->id;
                     $this->line('Make logged');
 
-                    $range = Ranges::firstOrCreate(['name' => $data[2], 'make_id' => $make])->id;
+                    $range = Ranges::firstOrCreate(['name' => $data[2], 'make_id' => $make], ['name' => $data[2], 'make_id' => $make])->id;
                     $this->line('Range logged');
 
                     $model = Models::firstOrCreate(['name' => $data[3], 'range_id' => $range])->id;
@@ -94,12 +95,14 @@ class ImportVehicles extends Command
                         $this->error($err); 
                     }
 
-                    if (!(is_numeric($data[5]) && $data['price_column'] > 0)) {
+                    if (!(is_numeric($price = str_replace(',', '', $data[5])) && $price > 0)) {
                         $errors[$row][] = $err = "Vehicle requires a price that is a positive number";
                         $this->error($err);  
                     }
 
-                    if (count($data[10]) < 3) {
+                    $images = explode(',', $data[10]);
+
+                    if (!(is_array($images) && count($images) >= 3)) {
                         $errors[$row][] = $err = "Vehicle requires 3 images"; 
                         $this->error($err); 
                     }
@@ -113,7 +116,7 @@ class ImportVehicles extends Command
                             'price_inc_vat' => $data[5],
                             'mileage' => $data[7],
                             'date_on_forecourt' => Carbon::parse($data[9]),
-                            'images' => empty($data[10]) ?: serialize($data[10])
+                            'images' => empty($images) ?: serialize($images)
                         ]);
 
                         $success[$row][] = $msg = "Row {$row} imported successfully";
@@ -121,7 +124,7 @@ class ImportVehicles extends Command
                         $this->info($msg);
                     } else {
                         $this->line('');
-                        $this->error('Row {$row} not imported');
+                        $this->error("Row {$row} not imported");
                     }
 
                     $this->line('');
@@ -133,10 +136,10 @@ class ImportVehicles extends Command
             fclose($handle);
         }
 
-        $this->line('Processed: {count($success) + count($errors)} rows');
-        $this->line('Successfully imported: {count($success)} rows');
-        $this->error('Failed to import: {count($errors)} rows');
-        $this->info('Import routine complete');
+        $this->line("Processed: ".((int) count($success) + (int) count($errors))." rows");
+        $this->line("Successfully imported: ".count($success)." rows");
+        $this->error("Failed to import: ".count($errors)." rows");
+        $this->info("Import routine complete");
 
         return 0;
     }
