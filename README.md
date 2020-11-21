@@ -1,3 +1,46 @@
+# Cars Repo Example
+
+An example used car dealership system logging make, range, model, derivative, colour, mileage, price, images and registration of vehicles
+
+## Installation
+
+```shell
+git clone https://github.com/connf/cars.git
+cd cars
+composer install
+touch database.sqlite
+php artisan migrate
+```
+
+## CSV Importation
+
+The system is designed to handle CSV files with columns in the following order:
+
+`REG	MAKE	RANGE	MODEL	DERIVATIVE	PRICE_INC_VAT	COLOUR	MILEAGE	VEHICLE_TYPE	DATE_ON_FORECOURT	IMAGES`
+
+Header names do **NOT** have to match those above and are indicative only
+
+The first row should **ALWAYS** contain headers or an empty header row
+
+The second row should be the **FIRST** row of data and will be referred to as **row 1** hereafter
+
+To import a CSV execute the following command from the root of the */cars* repository cloned earlier:
+
+```shell
+php artisan vehicles:import {csv_file} {starting_row_number}
+```
+
+Where:
+**csv_file:** is a filename as either filename.csv or ./filename.csv if in the */cars* folder, or a full file path to the CSV file to import
+**starting_row_number:** is a number equal to or greater than 1 - or an empty value
+
+For example:
+
+```shell
+php artisan vehicles:import example_stock.csv 50
+```
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 <p align="center">
@@ -59,4 +102,3 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# cars" 
