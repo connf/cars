@@ -10,6 +10,7 @@ class Derivatives extends Model
     use HasFactory;
 
     protected $fillable = [
+    	'model_id',
         'name'
     ];
 

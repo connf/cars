@@ -10,6 +10,7 @@ class Models extends Model
     use HasFactory;
 
     protected $fillable = [
+        'range_id',
         'name'
     ];
 
