@@ -16,7 +16,7 @@ class CreateRangesTable extends Migration
         Schema::create('ranges', function (Blueprint $table) {
             $table->id();
             $table->foreign('make_id')->references('id')->on('makes');
-            $able->string('name');
+            $table->string('name');
             $table->timestamps();
         });
     }
