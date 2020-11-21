@@ -18,7 +18,7 @@ class ImportVehicles extends Command
      *
      * @var string
      */
-    protected $signature = 'vehilces:import {file} {start?}';
+    protected $signature = 'vehicles:import {file} {start?}';
 
     /**
      * The console command description.
