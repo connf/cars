@@ -15,6 +15,10 @@ class UpdateVehiclesAddActiveFlag extends Migration
      */
     public function up()
     {
+        Schema::table('vehicles', function (Blueprint $table) {
+            $table->boolean('active')->nullable();
+        });
+
         $vehicles = Vehicles::all();
 
         foreach ($vehicles as $vehicle) {
@@ -25,10 +29,6 @@ class UpdateVehiclesAddActiveFlag extends Migration
 
             $vehicle->update();
         }
-dd('end');
-        Schema::table('vehicles', function (Blueprint $table) {
-            $table->boolean('active')->default(0);
-        });
     }
 
     /**
