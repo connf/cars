@@ -9,6 +9,10 @@ class Ranges extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name'
+    ];
+
     public function model()
     {
     	return $this->hasMany(Models::class);

@@ -9,6 +9,10 @@ class Derivatives extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name'
+    ];
+
     public function model()
     {
     	return $this->belongsTo(Models::class);

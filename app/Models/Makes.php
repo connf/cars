@@ -9,6 +9,10 @@ class Makes extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name'
+    ];
+
     public function range()
     {
     	return $this->hasMany(Ranges::class);

@@ -9,6 +9,10 @@ class Vehicles extends Model
 {
     use HasFactory;
 
+    protected $dates = [
+    	'date_on_forecourt'
+    ]
+
     public function colour()
     {
     	return $this->hasOne(Colours::class);

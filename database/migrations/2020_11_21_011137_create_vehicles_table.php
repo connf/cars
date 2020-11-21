@@ -19,12 +19,13 @@ class CreateVehiclesTable extends Migration
             $table->foreign('colour_id')->references('id')->on('colours');
             $table->foreign('vehicle_type_id')->references('id')->on('vehicle_types');
             $table->string('registration')->length(7);
-            $table->decimal('price_ex_vat', 19, 4);
-            $table->decimal('vat', 19 ,4);
-            $table->integer('mileage');
-            $table->datetime('date_on_forecourt');
+            // $table->decimal('price_ex_vat', 19, 4);
+            // $table->decimal('vat', 19 ,4);
+            $table->decimal('price_inc_vat', 19 ,4);
+            $table->integer('mileage')->nullable();
+            $table->datetime('date_on_forecourt')->nullable();
             $table->string('images');
-            $table->boolean('active');
+            // $table->boolean('active');
             $table->timestamps();
         });
     }

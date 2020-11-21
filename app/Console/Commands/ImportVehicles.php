@@ -2,6 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Makes;
+use App\Models\Ranges;
+use App\Models\Models;
+use App\Models\Derivatives;
+use App\Models\Colours;
+use App\Models\VehicleTypes;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class ImportVehicles extends Command
@@ -18,6 +25,7 @@ class ImportVehicles extends Command
      *
      * @var string
      */
+
     protected $description = 'Import vehicles from CSV';
 
     /**
@@ -37,7 +45,7 @@ class ImportVehicles extends Command
      */
     public function handle()
     {
-        $this->info('Import process starting...');
+        $this->info('Starting import process...');
 
         if ($start = $this->argument('start')) {
             if (!is_numeric($start)) {
@@ -45,44 +53,91 @@ class ImportVehicles extends Command
 
                 return 1;
             }
-
-            $start = intval($start);
-
-            $this->line('Starting import from row: '.$start);
-
-            /**
-             * Code for starting from a specific row goes here...
-             */
-            $this->line('This is yet to be implemented. Please import entire spreadsheet instead.');
         }
 
-        
+        // default to row 1 (after headers) or use row number if valid
+        $start = intval($start) ?: 1; 
 
-        // The code will go here
+        // initialise variables
+        $row = 0; // 0 = headers, 1+ = data rows
+        $errors = [];
+        $success = [];
 
-        // Get $file
-        // fopen? file and readline
-        // foreach readline as line 
-        // if not top row
-        // build array of columns (explode \t?)
-        // if not empty check for make id or add to db
-        // if not empty check for range id or add to db
-        // if not empty check for model id or add to db
-        // if not empty check for deriv id or add to db
-        // if not empty check for colour id or add to db
-        // if not empty check for veh type id or add to db
+        $this->line('Starting import from row: '.$start);
 
-        // if reg is empty +1 fail and go to next row
+        if (($handle = fopen($this->argument('file'), "r")) !== false) {
+            while (($data = fgetcsv($handle)) !== false && $row < 5) {
+                if ($row >= $start) {
+                    $this->info("Importing row $row:");
 
-        // if images is 2 or less +1 fail and go to next row
+                    $make = Makes::firstOrCreate(['name' => $data[1]])->id;
+                    $this->line('Make logged');
 
-        // if price is not a positive number +1 fail and go to next row
+                    $range = Ranges::firstOrCreate(['name' => $data[2], 'make_id' => $make])->id;
+                    $this->line('Range logged');
 
-        // add new array to table +1 success and go to next row
+                    $model = Models::firstOrCreate(['name' => $data[3], 'range_id' => $range])->id;
+                    $this->line('Model logged');
 
+                    $derivative = Derivatives::firstOrCreate(['name' => $data[4], 'model_id' => $model])->id;
+                    $this->line('Derivative logged');
 
+                    $colour = Colours::firstOrCreate(['name' => $data[6]])->id;
+                    $this->line('Colour logged');
 
+                    $type = VehicleTypes::firstOrCreate(['name' => $data[8]])->id;
+                    $this->line('Vehicle type logged');
+
+                    // Check for and log errors
+                    if (empty($data[0])) {
+                        $errors[$row][] = $err = "Vehicle requires a registration number";
+                        $this->error($err); 
+                    }
+
+                    if (!(is_numeric($data[5]) && $data['price_column'] > 0)) {
+                        $errors[$row][] = $err = "Vehicle requires a price that is a positive number";
+                        $this->error($err);  
+                    }
+
+                    if (count($data[10]) < 3) {
+                        $errors[$row][] = $err = "Vehicle requires 3 images"; 
+                        $this->error($err); 
+                    }
+
+                    if (!array_key_exists($row, $errors)) {
+                        Vehicles::create([
+                            'derivative_id' => $derivative,
+                            'colour_id' => $colour,
+                            'vehicle_type_id' => $type,
+                            'registration' => $data[0],
+                            'price_inc_vat' => $data[5],
+                            'mileage' => $data[7],
+                            'date_on_forecourt' => Carbon::parse($data[9]),
+                            'images' => empty($data[10]) ?: serialize($data[10])
+                        ]);
+
+                        $success[$row][] = $msg = "Row {$row} imported successfully";
+                        $this->line('');
+                        $this->info($msg);
+                    } else {
+                        $this->line('');
+                        $this->error('Row {$row} not imported');
+                    }
+
+                    $this->line('');
+                    $this->line('');
+                }
+
+                $row++;
+            }
+            fclose($handle);
+        }
+
+        $this->line('Processed: {count($success) + count($errors)} rows');
+        $this->line('Successfully imported: {count($success)} rows');
+        $this->error('Failed to import: {count($errors)} rows');
         $this->info('Import routine complete');
+
         return 0;
     }
 }
