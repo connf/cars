@@ -15,6 +15,7 @@ class CreateVehiclesTable extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
+            $table->integer('derivative_id');
             $table->foreign('derivative_id')->references('id')->on('derivatives');
             $table->foreign('colour_id')->references('id')->on('colours');
             $table->foreign('vehicle_type_id')->references('id')->on('vehicle_types');
