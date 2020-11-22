@@ -24,10 +24,11 @@ The first row should **ALWAYS** contain headers or an empty header row
 
 The second row should be the **FIRST** row of data and will be referred to as **row 1** hereafter
 
-To import a CSV execute the following command from the root of the */cars* repository cloned earlier:
+To import a CSV execute the following 
+command from the root of the */cars* repository cloned earlier:
 
 ```shell
-php artisan vehicles:import {csv_file} {starting_row_number}
+php artisan vehicles:import {csv_file} {optional:starting_row_number}
 ```
 
 Where:
@@ -39,6 +40,69 @@ For example:
 ```shell
 php artisan vehicles:import example_stock.csv 50
 ```
+
+**NOTE:**
+To successfully import an generate a mail report please ensure the following is set in the .env:
+
+```
+MAIL_MAILER=smtp
+MAIL_HOST=
+MAIL_PORT=
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=
+```
+
+**In development a live mail server was used and has therefore being cleared from this .env for security reasons.**
+
+## CSV Export
+
+The system is designed to handle CSV files and connect to an FTP Server.
+
+Before running the command the following should be added to the .env:
+
+```
+ftp_server=
+ftp_username=
+ftp_password=
+```
+
+**In development a live FTP server was used and has therefore being cleared from this .env for security reasons.**
+
+Columns will be added in the following order:
+
+`registration	car_tile	price_ex_vat	vat (20%)	image`
+
+Header names are generated automatically and are hardcoded in to the source code. These are not customisable in this release.
+
+To export a CSV execute the following command from the root of the */cars* repository cloned earlier:
+
+```shell
+php artisan vehicles:export {optional:make}
+```
+
+Where:
+**make:** is the name of a vehicle make - or an empty value. This is case-**in**sensitive.
+
+For example:
+
+```shell
+php artisan vehicles:export
+```
+
+...will export all vehicles.
+
+or:
+
+```shell
+php artisan vehicles:export ford
+```
+
+...will export all Ford vehicles
+
+
+
+
 
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
