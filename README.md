@@ -8,6 +8,8 @@ An example used car dealership system logging make, range, model, derivative, co
 git clone https://github.com/connf/cars.git
 cd cars
 composer install
+php -r "copy('.env.example', '.env2');"
+php artisan key:generate
 touch database.sqlite
 php artisan migrate
 ```
