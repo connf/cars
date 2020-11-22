@@ -36,7 +36,7 @@ class Vehicles extends Model
 
     public function derivative()
     {
-        return $this->hasOne(Derivative::class);
+        return $this->hasOne(Derivatives::class);
     }
 
     public function make()
