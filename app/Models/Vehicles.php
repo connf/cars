@@ -31,6 +31,16 @@ class Vehicles extends Model
 
     public function type()
     {
-    	return $this->hasOne(VehicleTypes::class);
+        return $this->hasOne(VehicleTypes::class);
+    }
+
+    public function derivative()
+    {
+        return $this->hasOne(Derivative::class);
+    }
+
+    public function make()
+    {
+        return $this->derivative()->model()->range()->make()->name;
     }
 }
