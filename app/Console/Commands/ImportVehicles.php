@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\VehiclesImported;
 use App\Models\Makes;
 use App\Models\Ranges;
 use App\Models\Models;
@@ -11,6 +12,7 @@ use App\Models\Vehicles;
 use App\Models\VehicleTypes;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class ImportVehicles extends Command
 {
@@ -136,10 +138,19 @@ class ImportVehicles extends Command
             fclose($handle);
         }
 
-        $this->line("Processed: ".((int) count($success) + (int) count($errors))." rows");
-        $this->line("Successfully imported: ".count($success)." rows");
-        $this->error("Failed to import: ".count($errors)." rows");
+        $results = [
+            'total' => (int) count($success) + (int) count($errors),
+            'success' => count($success),
+            'errored' => count($errors),
+            'errors' => $errors
+        ];
+
+        $this->line("Processed: ".$results['total']." rows");
+        $this->line("Successfully imported: ".$results['success']." rows");
+        $this->error("Failed to import: ".$results['errored']." rows");
         $this->info("Import routine complete");
+
+        Mail::send(new VehiclesImported($results));
 
         return 0;
     }
